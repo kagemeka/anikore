@@ -26,32 +26,7 @@ import typing
 
 
 
-
-def binary_search():
-  lo = 1 
-  hi = 10 ** 5
-  url = 'https://www.anikore.jp/'
-
-  while hi - lo > 1:
-    i = (lo + hi) // 2
-    res = requests.get(
-      f'{url}/anime/{i}/',
-    )
-    if res.url == url:
-      hi = i
-    else:
-      lo = i
-  return lo
     
-
-
-
-@dataclasses.dataclass
-class SeasonTbl():
-  winter: int = 0
-  spring: int = 1
-  summer: int = 2
-  autumn: int = 3
 
 
 @dataclasses.dataclass
@@ -61,6 +36,81 @@ class Metadata():
   media: str
   title: str
   overview: str
+
+
+
+class ScrapeMetadata():
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ):
+    self.__soup = soup
+    meta = self.__get_meta()
+    ov = self.__get_overview()
+    return Metadata(
+      *meta,
+      ov,
+    )
+  
+
+  def __get_meta(
+    self,
+  ):
+    soup = self.__soup
+    elms = soup.find(
+      'ul', 
+      {
+        'class': 'l-breadcrumb_flexRoot',
+      },
+    ).find_all('li')
+    return (
+      elms[i].text
+      for i in range(-4, 0)
+    )
+  
+
+  def __get_overview(
+    self,
+  ):
+    return self.__soup.find(
+      'section',
+      {
+        'class': 'l-animeDetailStory',
+      },
+    ).find(
+      'blockquote',
+    ).text
+
+
+@dataclasses.dataclass
+class Summary():
+  total_score: int
+  review_cnt: int
+  shelf_cnt: int 
+  rank: int
+
+
+
+class ScrapeSummary():
+  
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ):
+    summary_base = (
+      'l-animeDetailHeader_pointSummary_unit'
+    )
+    summaries = soup.find_all(
+      'div',
+      {
+        'class': summary_base,
+      },
+    )
+    return Summary(*(
+      s.find('strong').text
+      for s in summaries
+    ))
+    
 
 
 @dataclasses.dataclass
@@ -73,13 +123,239 @@ class Point():
   character: int
 
 
-@dataclasses.dataclass
-class Summary():
-  total_score: int
-  review_cnt: int
-  shelf_cnt: int 
-  rank: int
 
+class ScrapePoint():
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ):
+    self.__soup = soup
+    self.__find_section()
+    tot = self.__get_total()
+    det = self.__get_details()
+    return Point(
+      tot,
+      *det,
+    )
+
+
+  def __find_section(
+    self,
+  ):
+    section = self.__section
+    elm = self.__soup.find(
+      'div',
+      {
+        'class': section,
+      },
+    )
+    self.__elm = elm
+
+
+  def __init__(
+    self,
+  ):
+    self.__section = (
+      'l-animeDetailHeader_pointAndButtonBlock'
+    )
+
+  
+  def __get_total(
+    self,
+  ):
+    section = self.__section 
+    return self.__elm.find(
+      'div',
+      {
+        'class': (
+          f'{section}_'
+          'starBlock'
+        ),
+      },
+    ).find('strong').text
+    
+
+  def __get_details(
+    self,
+  ):
+    section = self.__section
+    points = self.__elm.find(
+      'dl',
+      {
+        'class': (
+          f'{section}_'
+          'pointBlock'
+        ),
+      },
+    ).find_all('dd')
+    return (
+      p.text.strip()
+      for p in points
+    )
+
+
+
+
+
+class ScrapeHeader():
+
+  def __call__(
+    self,
+    anime_id: int
+  ):
+    self.__id = anime_id
+    self.__make_soup()
+    self.__scrape_metadata()
+    self.__scrape_summary()
+    self.__scrape_point()
+    print(self.__point)
+  
+
+  def __make_soup(
+    self,
+  ):
+    i = self.__id
+    response = requests.get(
+      f'{self.__base_url}{i}/',
+    )
+    soup = bs4.BeautifulSoup(
+      response.content,
+      'html.parser',
+    )
+    self.__soup = soup 
+
+
+  def __init__(
+    self,
+  ):
+    self.__base_url = (
+      'https://www.anikore.jp/'
+      'anime/'
+    )
+
+
+  def __scrape_metadata(
+    self,
+  ):
+    scrape = ScrapeMetadata()
+    self.__metadata = scrape(
+      self.__soup,
+    )
+
+
+  def __scrape_summary(
+    self,
+  ):
+    scrape = ScrapeSummary()
+    self.__summary = scrape(
+      self.__soup,
+    )
+
+
+  def __scrape_point(
+    self,
+  ):
+    scrape = ScrapePoint()
+    self.__point = scrape(
+      self.__soup,
+    )
+
+  
+  
+
+
+
+class ScrapeTags():
+  ...
+
+
+
+class SearchAnimeCnt():
+  def __call__(
+    self,
+  ):
+    self.__binary_search()
+    return self.__anime_cnt
+
+  
+  def __init__(
+    self,
+  ):
+    site_url = (
+      'https://www.anikore.jp/'
+    )
+    self.__base_url = (
+      f'{site_url}/anime/'
+    )
+    self.__redirect_url = (
+      site_url
+    )
+
+
+  def __binary_search(
+    self,
+  ) -> int:
+    lo, hi = 1, int(1e5)
+    while hi - lo > 1:
+      i = (lo + hi) // 2
+      if self.__exist(i):
+        lo = i
+      else:
+        hi = i
+    self.__anime_cnt = lo
+
+
+  def __exist(
+    self,
+    anime_id: int
+  ) -> bool:
+    i = anime_id
+    response = requests.get(
+      f'{self.__base_url}/{i}',
+    )
+    return (
+      response.url
+      != self.__redirect_url
+    )
+
+    
+
+  
+
+
+
+
+class ScrapeAnime():
+  
+
+  def __call__(
+    self,
+  ):
+    # n = (
+    #   self.__search_anime_cnt()
+    # )
+    n = 13513
+    print(n)
+    for i in trange(10):
+      self.__scrape_header(i + 1)
+
+
+  
+  def __init__(
+    self,
+  ):
+    ...
+    self.__search_anime_cnt = (
+      SearchAnimeCnt()
+    )
+    self.__scrape_header = (
+      ScrapeHeader()
+    )
+  
+  
+
+
+  
 
 
 
@@ -112,105 +388,10 @@ def main():
   #   print(u)
 
 
-  # n = binary_search()
 
-
+  ScrapeAnime()()
   s = time.time()
-  for i in trange(13000):
-    try:
-      i += 1
-      base_anime_url = (
-        f'{url}/anime/'
-      )
-      res = requests.get(
-        f'{base_anime_url}{i}/'
-      )
-      # print(res.url)
-      soup = bs4.BeautifulSoup(
-        res.content,
-        'html.parser',
-      )
-      metadatas = soup.find(
-        'ul', 
-        {
-          'class': 'l-breadcrumb_flexRoot',
-        },
-      ).find_all('li')
-      metadata = (
-        metadatas[i].text
-        for i in range(-4, 0)
-      )
-
-      overview = soup.find(
-        'section',
-        {
-          'class': 'l-animeDetailStory',
-        },
-      ).find(
-        'blockquote',
-      ).text 
-      metadata = Metadata(
-        *metadata,
-        overview,
-      )
-      summary_base = (
-        'l-animeDetailHeader_pointSummary_unit'
-      )
-      summaries = soup.find_all(
-        'div',
-        {
-          'class': summary_base,
-        },
-      )
-      summary = Summary(*(
-        s.find('strong').text
-        for s in summaries
-      ))
-      
-      
-      point_base = (
-        'l-animeDetailHeader_pointAndButtonBlock'
-      )
-      points = soup.find(
-        'div',
-        {
-          'class': point_base,
-        },
-      )
-      total = points.find(
-        'div',
-        {
-          'class': (
-            f'{point_base}_'
-            'starBlock'
-          ),
-        },
-      ).find('strong').text
-      points = points.find(
-        'dl',
-        {
-          'class': (
-            f'{point_base}_'
-            'pointBlock'
-          ),
-        },
-      ).find_all('dd')
-      points = (
-        p.text.strip()
-        for p in points
-      )
-      point = Point(
-        total,
-        *points,
-      )
-    except:
-      pass
-    # time.sleep(0.1)
-
-    # print(metadata)
-    # print(summary)
-    # print(point)
-
+ 
     
 
   print(time.time() - s)
