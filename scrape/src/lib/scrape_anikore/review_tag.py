@@ -71,13 +71,13 @@ class ScrapeReviewTag():
       'a',
     ).text.split()[1]
     ptn = re.compile(
-      r'(.+)\((\d+)\)',
+      r'(.+)\((-?\d+)\)',
     )
     m = re.match(ptn, s)
     return ReviewTag(
-      self.__id,
-      m.group(1),
-      int(m.group(2)),
+      anime_id=self.__id,
+      tag=m.group(1),
+      cnt=int(m.group(2)),
     )
 
   

@@ -1,8 +1,3 @@
-# FROM python:3.9.5-alpine
-# SHELL ["ash", "-c"]
-# RUN apk add build-base
-
-
 FROM ubuntu:20.04
 SHELL ["/bin/bash", "-c"]
 WORKDIR /root/ 
