@@ -52,10 +52,16 @@ services:
     tty: true
     volumes:
       - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix 
+        volume: 
+          nocopy: true
+      - type: bind
         source: $ROOT/scrape/
         target: /root/scrape/
         volume:
           nocopy: true
+      
 
 
 
