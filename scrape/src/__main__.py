@@ -45,16 +45,14 @@ class ScrapeAnime():
     # )
     n = 13513
     print(n)
-    for i in trange(100):
-      # h = self.__scrape_header(
-      #   i + 1,
-      # )
-      # pprint(h)
-      tags = self.__scrape_tags(
+    for i in trange(100, 1000):
+      h = self.__scrape_header(
         i + 1,
       )
-      pprint(tags)
- 
+      t = self.__scrape_tags(
+        i + 1,
+      )
+
   
   def __init__(
     self,
@@ -76,6 +74,9 @@ class ScrapeAnime():
   
 
 
+import sqlalchemy
+import pymysql
+
 
 
 
@@ -86,7 +87,23 @@ def main():
 
   s = time.time()
  
-  ScrapeAnime()()
+  # ScrapeAnime()()
+  conn = pymysql.connect(
+    host='db',
+    port=3306,
+    user='root',
+    password='test_passwd',
+  )
+  
+  cur = conn.cursor()
+  cur.execute('SHOW DATABASES')
+
+  print(cur.fetchall())
+  cur.execute('CREATE DATABASE test_db')
+  cur.execute('SHOW DATABASES')
+
+  print(cur.fetchall())
+
     
 
   print(time.time() - s)
