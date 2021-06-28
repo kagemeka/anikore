@@ -56,14 +56,15 @@ class SeasonTbl():
 
 @dataclasses.dataclass
 class Metadata():
-  year: int
+  year: str 
   season: str 
   media: str
+  title: str
   overview: str
 
 
 @dataclasses.dataclass
-class PointByUser():
+class Point():
   total: int
   story: int
   drawing: int
@@ -112,27 +113,110 @@ def main():
 
 
   # n = binary_search()
-  i = 10523
-  base_anime_url = (
-    f'{url}/anime/'
-  )
-  res = requests.get(
-    f'{base_anime_url}{i}/'
-  )
-  # print(res.url)
-  soup = bs4.BeautifulSoup(
-    res.content,
-    'html.parser',
-  )
-  elm = soup.find(
-    'ul', 
-    {
-      'class': 'l-breadcrumb_flexRoot',
-    },
-  ).find_all('li')
-  pprint(elm)
-  for x in elm:
-    print(x.text)
+
+
+  s = time.time()
+  for i in trange(13000):
+    try:
+      i += 1
+      base_anime_url = (
+        f'{url}/anime/'
+      )
+      res = requests.get(
+        f'{base_anime_url}{i}/'
+      )
+      # print(res.url)
+      soup = bs4.BeautifulSoup(
+        res.content,
+        'html.parser',
+      )
+      metadatas = soup.find(
+        'ul', 
+        {
+          'class': 'l-breadcrumb_flexRoot',
+        },
+      ).find_all('li')
+      metadata = (
+        metadatas[i].text
+        for i in range(-4, 0)
+      )
+
+      overview = soup.find(
+        'section',
+        {
+          'class': 'l-animeDetailStory',
+        },
+      ).find(
+        'blockquote',
+      ).text 
+      metadata = Metadata(
+        *metadata,
+        overview,
+      )
+      summary_base = (
+        'l-animeDetailHeader_pointSummary_unit'
+      )
+      summaries = soup.find_all(
+        'div',
+        {
+          'class': summary_base,
+        },
+      )
+      summary = Summary(*(
+        s.find('strong').text
+        for s in summaries
+      ))
+      
+      
+      point_base = (
+        'l-animeDetailHeader_pointAndButtonBlock'
+      )
+      points = soup.find(
+        'div',
+        {
+          'class': point_base,
+        },
+      )
+      total = points.find(
+        'div',
+        {
+          'class': (
+            f'{point_base}_'
+            'starBlock'
+          ),
+        },
+      ).find('strong').text
+      points = points.find(
+        'dl',
+        {
+          'class': (
+            f'{point_base}_'
+            'pointBlock'
+          ),
+        },
+      ).find_all('dd')
+      points = (
+        p.text.strip()
+        for p in points
+      )
+      point = Point(
+        total,
+        *points,
+      )
+    except:
+      pass
+    # time.sleep(0.1)
+
+    # print(metadata)
+    # print(summary)
+    # print(point)
+
+    
+
+  print(time.time() - s)
+  # pprint(elm)
+  # for x in elm:
+  #   print(x.text)
 
 
 if __name__ == '__main__':
