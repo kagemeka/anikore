@@ -14,13 +14,14 @@ import typing
 
 import time
     
-
+import re
 
   
 
 from lib.scrape_anikore import(
   ScrapeHeader,
   SearchAnimeCnt,
+  ScrapeReviewTag,
 )
   
 
@@ -44,11 +45,15 @@ class ScrapeAnime():
     # )
     n = 13513
     print(n)
-    for i in trange(10):
-      h = self.__scrape_header(
+    for i in trange(100):
+      # h = self.__scrape_header(
+      #   i + 1,
+      # )
+      # pprint(h)
+      tags = self.__scrape_tags(
         i + 1,
       )
-      pprint(h)
+      pprint(tags)
  
   
   def __init__(
@@ -60,6 +65,9 @@ class ScrapeAnime():
     )
     self.__scrape_header = (
       ScrapeHeader()
+    )
+    self.__scrape_tags = (
+      ScrapeReviewTag()
     )
   
   

@@ -1,5 +1,4 @@
 import requests
-import requests
 import bs4
 import dataclasses
 from dataclasses import (
@@ -54,6 +53,15 @@ class ScrapeHeader():
     return self.__header
   
 
+  def __init__(
+    self,
+  ) -> typing.NoReturn:
+    self.__base_url = (
+      'https://www.anikore.jp/'
+      'anime/'
+    )
+
+
   def __make_soup(
     self,
   ) -> typing.NoReturn:
@@ -79,15 +87,6 @@ class ScrapeHeader():
       *astuple(metadata),
       *astuple(summary),
       *astuple(point),
-    )
-
-
-  def __init__(
-    self,
-  ) -> typing.NoReturn:
-    self.__base_url = (
-      'https://www.anikore.jp/'
-      'anime/'
     )
 
 
