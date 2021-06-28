@@ -4,7 +4,7 @@ from tqdm import trange
 
 import requests
 import bs4
-from pprint import (
+from prettyprinter import (
   pprint,
 )
 
@@ -14,13 +14,14 @@ import typing
 
 import time
     
-
+import re
 
   
 
 from lib.scrape_anikore import(
   ScrapeHeader,
   SearchAnimeCnt,
+  ScrapeReviewTag,
 )
   
 
@@ -44,10 +45,16 @@ class ScrapeAnime():
     # )
     n = 13513
     print(n)
-    for i in trange(10):
-      self.__scrape_header(i + 1)
-
-
+    for i in trange(100):
+      # h = self.__scrape_header(
+      #   i + 1,
+      # )
+      # pprint(h)
+      tags = self.__scrape_tags(
+        i + 1,
+      )
+      pprint(tags)
+ 
   
   def __init__(
     self,
@@ -58,6 +65,9 @@ class ScrapeAnime():
     )
     self.__scrape_header = (
       ScrapeHeader()
+    )
+    self.__scrape_tags = (
+      ScrapeReviewTag()
     )
   
   
@@ -71,35 +81,12 @@ class ScrapeAnime():
 
 def main():
   url = 'https://www.anikore.jp/'
-  # opts = FirefoxOptions()
-  # opts.headless = True 
-  # driver = Firefox(
-  #   options=opts,
-  # )
-  # driver.get(url)
-  # time.sleep(2)
-  # # driver.close() 
-  # driver.find_element(
-  #   by=By.CLASS_NAME,
-  #   value='m-gnavi_unit-pop',
-  # ).click()
-  # driver.get(
-  #   f'{url}/pop_ranking',
-  # )
-  # for i in trange(20000):
-  #   i += 1
-  #   _url = f'{url}/anime/{i}/'
-  #   driver.get(_url)
-  #   u = driver.current_url
-  #   if u == url:
-  #     break
-  #   print(u)
 
 
 
-  ScrapeAnime()()
   s = time.time()
  
+  ScrapeAnime()()
     
 
   print(time.time() - s)
