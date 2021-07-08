@@ -13,23 +13,16 @@ class Tag():
 
 
 
-@dataclasses.dataclass
-class AnimeTag():
-  anime_id: int
-  tags: typing.List[Tag]
-
-
-
-class ScrapeAnimeTag():
+class ScrapeTags():
 
   def __call__(
     self,
     anime_id: int
-  ) -> AnimeTag:
+  ) -> typing.List[Tag]:
     self.__id = anime_id
     self.__make_soup()
     self.__scrape()
-    return self.__tag
+    return self.__tags
 
 
   def __init__(
@@ -90,11 +83,7 @@ class ScrapeAnimeTag():
     self,
   ) -> typing.NoReturn:
     self.__get_tags()
-    tags = [
+    self.__tags = [
       self.__extract(tag)
       for tag in self.__tags
     ]
-    self.__tag = AnimeTag(
-      self.__id,
-      tags,
-    )

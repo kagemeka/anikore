@@ -17,6 +17,10 @@ from .point import (
   ScrapePoint,
   Point,
 )
+from .tag import (
+  Tag,
+  ScrapeTags,
+)
 
 
 
@@ -26,6 +30,7 @@ class Anime():
   metadata: Metadata
   summary: Summary
   point: Point
+  tags: typing.List[Tag]
 
 
 
@@ -72,8 +77,10 @@ class ScrapeAnime():
       ScrapeSummary(),
       ScrapePoint(),
     )
+    id_ = self.__id
     soup = self.__soup
     self.__anime = Anime(
-      self.__id,
+      id_,
       *(f(soup) for f in fns),
+      ScrapeTags()(id_),
     )
