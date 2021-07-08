@@ -26,7 +26,7 @@ class MakeDF():
   def __call__(
     self,
     anime: Anime,
-  ) -> typing.NoReturn:
+  ) -> AdamDF:
     self.__anime = anime
     self.__make()
     return self.__df
@@ -84,24 +84,49 @@ class MakeDF():
 
 
 
-def MakeDFs():
-  ...
+class MakeDFs():
+  def __call__(
+    self,
+  ) -> AdamDF:
+    self.__scrape()
+    self.__make()
+    return self.__df
   
+
+  def __make(
+    self,
+  ) -> typing.NoReturn:
+    fn = MakeDF()
+    meta = []
+    tag = []
+    i = 0
+    for anime in self.__animes:
+      df = fn(anime)
+      meta.append(df.meta)
+      tag.append(df.tag)
+      i += 1
+      if i == 30:
+        break 
+      print(anime)
+    self.__df = AdamDF(
+      pd.concat(meta),
+      pd.concat(tag),
+    )
+  
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    ids = ScrapeAnimeIds()()
+    scrape = ScrapeAnimes()
+    self.__animes = scrape(ids)
 
 
 def main():
-  # ids = ScrapeAnimeIds()()
-
   ids = [10523]
-
-  scrape = ScrapeAnimes()
-  animes = scrape(ids)
-  make = MakeDF()
-  for anime in animes:
-    df = make(anime)
-    print(df)
-    break
-    print(anime)
+  make = MakeDFs()
+  df = make()
+  print(df)
 
 
   # s = time.time()
