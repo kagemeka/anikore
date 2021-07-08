@@ -2,7 +2,8 @@ import requests
 import typing
 
 
-class SearchAnimeCnt():
+
+class SearchMaxAnimeId():
   def __call__(
     self,
   ) -> int:
@@ -17,7 +18,7 @@ class SearchAnimeCnt():
       'https://www.anikore.jp/'
     )
     self.__base_url = (
-      f'{site_url}/anime/'
+      f'{site_url}anime/'
     )
     self.__redirect_url = (
       site_url
@@ -27,7 +28,7 @@ class SearchAnimeCnt():
   def __binary_search(
     self,
   ) -> typing.NoReturn:
-    lo, hi = 1, int(1e5)
+    lo, hi = 1, 1 << 16
     while hi - lo > 1:
       i = (lo + hi) // 2
       if self.__exist(i):
@@ -43,11 +44,9 @@ class SearchAnimeCnt():
   ) -> bool:
     i = anime_id
     response = requests.get(
-      f'{self.__base_url}/{i}',
+      f'{self.__base_url}{i}/',
     )
     return (
       response.url
       != self.__redirect_url
     )
-
-    
