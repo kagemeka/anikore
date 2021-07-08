@@ -78,15 +78,11 @@ from pprint import (
   pprint,
 )
 
-from lib.anikore.scrape.anime.header.point import (
-  ScrapePoint,
+from lib.anikore.scrape import(
+  ScrapeAnime,
+  ScrapeAnimeTag,
 )
-from lib.anikore.scrape.anime.header.metadata import (
-  ScrapeMetadata,
-)
-from lib.anikore.scrape.anime.header.summary import (
-  ScrapeSummary,
-)
+
   
 
 
@@ -105,49 +101,12 @@ def main():
   # print(len(set(ids)))
 
   id_ = 10523
-  scrape = ScrapePoint()
-  res = requests.get(
-    f'https://anikore.jp/anime/{id_}'
-  )
-  soup = bs4.BeautifulSoup(
-    res.content,
-    'html.parser',
-  )
-  p = scrape(soup)
-  print(p)
-  scrape = ScrapeMetadata()
-  p = scrape(soup)
-  print(p)
-
-  scrape = ScrapeSummary()
-  p = scrape(soup)
-  print(p)
-  # url = 'https://www.anikore.jp/50on/'
-  # response = requests.get(
-  #   url,
-  # )
-  # soup = bs4.BeautifulSoup(
-  #   response.content,
-  #   'html.parser',
-  # )
-  # ls = soup.find_all(
-  #   class_='ssa50',
-  # )
-  # from itertools import (
-  #   chain,
-  # )
-  # ls = [
-  #   x.find_all('a')
-  #   for x in ls
-  # ]
-  # ls = chain.from_iterable(ls)
-  # cnt = sum(
-  #   int(x.find(
-  #     class_='bold',
-  #   ).text)
-  #   for x in ls
-  # )
-  # print(cnt)
+  scrape = ScrapeAnime()
+  res = scrape(id_)
+  print(res)
+  scrape = ScrapeAnimeTag()
+  res = scrape(id_)
+  print(res)
 
 
 

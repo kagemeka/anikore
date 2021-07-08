@@ -5,24 +5,31 @@ import requests
 import re
 
 
+
 @dataclasses.dataclass
-class ReviewTag():
-  anime_id: int
-  tag: str
+class Tag():
+  name: str
   cnt: int
 
 
 
-class ScrapeReviewTag():
+@dataclasses.dataclass
+class AnimeTag():
+  anime_id: int
+  tags: typing.List[Tag]
+
+
+
+class ScrapeAnimeTag():
 
   def __call__(
     self,
     anime_id: int
-  ) -> ReviewTag:
+  ) -> AnimeTag:
     self.__id = anime_id
     self.__make_soup()
-    self.__scrape_tags()
-    return self.__review_tags
+    self.__scrape()
+    return self.__tag
 
 
   def __init__(
@@ -48,25 +55,24 @@ class ScrapeReviewTag():
     self.__soup = soup 
 
 
-  def __find_tags(
+  def __get_tags(
     self,
   ) -> typing.NoReturn:
     soup = self.__soup
     self.__tags = soup.find(
-      'div',
-      {'id': 'tagTable'},
+      id='tagTable',
     ).find(
-      'ul',
-      {
-        'class': 'm-animeDetailTagBlock_tagList',
-      },
+      class_=(
+        'm-animeDetailTagBlock'
+        '_tagList'
+      ),
     ).find_all('li')
     
 
   def __extract(
     self,
     tag: bs4.element.Tag,
-  ) -> ReviewTag:
+  ) -> Tag:
     s = tag.find(
       'a',
     ).text.split()[1]
@@ -74,18 +80,21 @@ class ScrapeReviewTag():
       r'(.+)\((-?\d+)\)',
     )
     m = re.match(ptn, s)
-    return ReviewTag(
-      anime_id=self.__id,
-      tag=m.group(1),
+    return Tag(
+      name=m.group(1),
       cnt=int(m.group(2)),
     )
 
   
-  def __scrape_tags(
+  def __scrape(
     self,
   ) -> typing.NoReturn:
-    self.__find_tags()
-    self.__review_tags = [
+    self.__get_tags()
+    tags = [
       self.__extract(tag)
       for tag in self.__tags
     ]
+    self.__tag = AnimeTag(
+      self.__id,
+      tags,
+    )

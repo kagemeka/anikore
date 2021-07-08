@@ -5,3 +5,11 @@ from .max_anime_id import (
 from .anime_ids import (
   ScrapeAnimeIds,
 )
+
+from .anime import (
+  ScrapeAnime,
+)
+
+from .anime_tag import (
+  ScrapeAnimeTag,
+)
