@@ -1,111 +1,50 @@
 import requests
 from tqdm import trange
-
-
 import requests
 import bs4
-
 import dataclasses
 import typing
-
-
 import time
-    
-import re
-
-  
-
-# from \
-#   lib.anikore.scrape.anime \
-#  import(
-#   ScrapeHeader,
-#   SearchAnimeCnt,
-#   ScrapeReviewTag,
-# )
-
-from lib.anikore.scrape import(
-  SearchMaxAnimeId,
-  ScrapeAnimeIds,
-)
-  
-
-
-
-# class ScrapeTags():
-#   ...
-  
-
-
-
-
-# class ScrapeAnime():
-  
-
-#   def __call__(
-#     self,
-#   ):
-#     # n = (
-#     #   self.__search_anime_cnt()
-#     # )
-#     n = 13513
-#     print(n)
-#     for i in trange(100, 1000):
-#       h = self.__scrape_header(
-#         i + 1,
-#       )
-#       t = self.__scrape_tags(
-#         i + 1,
-#       )
-
-  
-#   def __init__(
-#     self,
-#   ):
-#     ...
-#     self.__search_anime_cnt = (
-#       SearchAnimeCnt()
-#     )
-#     self.__scrape_header = (
-#       ScrapeHeader()
-#     )
-#     self.__scrape_tags = (
-#       ScrapeReviewTag()
-#     )
-  
-  
-
 from pprint import (
   pprint,
 )
-
-from lib.anikore.scrape import(
-  ScrapeAnime,
-  ScrapeAnimeTag,
+from tqdm import (
+  tqdm,
 )
 
+ 
+from lib.anikore.scrape import(
+  SearchMaxAnimeId,
+  ScrapeAnimeIds,
+  ScrapeAnime,
+  Anime,
+)
   
+
+
+class ScrapeAnimes():
+  def __call__(
+    self,
+    ids: typing.List[int],
+  ) -> typing.Iterator[Anime]:
+    fn = ScrapeAnime()
+    for i in tqdm(ids):
+      yield fn(i)
+   
 
 
 # import sqlalchemy
 # import pymysql
 
 
-# 13538
-
 def main():
-  url = 'https://www.anikore.jp/'
+  ids = ScrapeAnimeIds()()
+  print(len(ids))
 
-  # ids = ScrapeAnimeIds()()
-  # print(len(ids))
-
-  id_ = 10523
-  scrape = ScrapeAnime()
-  res = scrape(id_)
-  print(res)
-  scrape = ScrapeAnimeTag()
-  res = scrape(id_)
-  print(res)
-
+  scrape = ScrapeAnimes()
+  animes = scrape(ids)
+  for anime in animes:
+    print(anime)
 
 
   # s = time.time()

@@ -8,8 +8,5 @@ from .anime_ids import (
 
 from .anime import (
   ScrapeAnime,
-)
-
-from .anime_tag import (
-  ScrapeAnimeTag,
+  Anime,
 )
