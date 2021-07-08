@@ -10,3 +10,6 @@ from .anime import (
   ScrapeAnime,
   Anime,
 )
+from .animes import (
+  ScrapeAnimes,
+)

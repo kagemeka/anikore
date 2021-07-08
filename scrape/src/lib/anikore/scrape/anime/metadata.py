@@ -1,6 +1,9 @@
 import bs4 
 import dataclasses 
 import typing
+from typing import (
+  Optional,
+)
 import re
 from unicodedata import (
   normalize,
@@ -10,11 +13,13 @@ from unicodedata import (
 
 @dataclasses.dataclass
 class Metadata():
-  year: int
-  season: str
-  media: str
   title: str
-  overview: str
+  media: str
+  year: Optional[int] = None
+  season: Optional[str] = None
+  overview: Optional[str] = (
+    None
+  )
 
 
 
@@ -31,28 +36,42 @@ class ScrapeMetadata():
   def __get_year_season(
     self,
   ) -> typing.NoReturn:
-    elms = self.__soup.find(
+    ls = self.__soup.find(
       class_='l-breadcrumb',
     ).find_all('li')
-    url = elms[-3].find(
+    if len(ls) < 3:
+      self.__year = None
+      self.__season = None
+      return
+    url = ls[-3].find(
       'a',
     ).get('href')
-    (
-      self.__year, 
-      self.__season,
-    ) = url.split('/')[-3:-1]
+    year, season = url.split(
+      '/',
+    )[-3:-1]
+    self.__year = int(year)
+    self.__season = season 
 
 
   def __get_title_media(
     self,
   ) -> typing.NoReturn:
-    elms = self.__soup.find(
+    ls = self.__soup.find(
       class_='l-breadcrumb',
     ).find_all('li')
-    title = elms[-1].text
-    media = elms[-2].text
-    self.__title = title
-    self.__media = media
+    if len(ls) < 3:
+      s = ls[-1].text
+      s = ' '.join(s.split())
+      s = normalize('NFKD', s)
+      ptn = re.compile(
+        r'^(.*)\(([^(]*)\)$',
+      )
+      m = re.match(ptn, s)
+      self.__title = m.group(1)
+      self.__media = m.group(2)
+      return
+    self.__title = ls[-1].text
+    self.__media = ls[-2].text
 
 
   def __get_overview(
@@ -63,13 +82,17 @@ class ScrapeMetadata():
         'l-animeDetailStory'
       ),
     ).find('blockquote').text
+    s = ' '.join(s.split())
     s = normalize('NFKD', s)
     ptn = re.compile(
       r'^(.*)\([^(]*\)$',
     )
     m = re.match(ptn, s)
-    s = m.group(1)
-    self.__overview = s
+    s = m.group(1).strip()
+    self.__overview = (
+      None if s == '詳細不明'
+      else s
+    )
    
 
   def __scrape(
@@ -79,9 +102,9 @@ class ScrapeMetadata():
     self.__get_year_season()
     self.__get_overview()
     self.__meta = Metadata(
-      int(self.__year),
-      self.__season,
-      self.__media,
       self.__title,
+      self.__media,
+      self.__year,
+      self.__season,
       self.__overview,
     )
