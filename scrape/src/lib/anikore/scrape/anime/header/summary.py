@@ -6,7 +6,7 @@ import typing
 
 @dataclasses.dataclass
 class Summary():
-  total_score: int
+  total_score: float
   review_cnt: int
   shelf_cnt: int 
   rank: int
@@ -19,17 +19,19 @@ class ScrapeSummary():
     self,
     soup: bs4.BeautifulSoup,
   ) -> Summary:
-    summary_base = (
-      'l-animeDetailHeader_pointSummary_unit'
+    cls_ = (
+      'l-animeDetailHeader_'
+      'pointSummary_unit'
     )
-    summaries = soup.find_all(
-      'div',
-      {
-        'class': summary_base,
-      },
+    ls = soup.find_all(
+      class_=cls_,
     )
-    return Summary(*(
+    ls = [
       s.find('strong').text
-      for s in summaries
-    ))
+      for s in ls
+    ]
+    ls[0] = float(ls[0])
+    for i in range(1, 4):
+      ls[i] = int(ls[i])
+    return Summary(*ls)
     
