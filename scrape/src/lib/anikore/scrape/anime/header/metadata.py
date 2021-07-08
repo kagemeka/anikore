@@ -10,7 +10,7 @@ from unicodedata import (
 
 @dataclasses.dataclass
 class Metadata():
-  year: str 
+  year: int
   season: str
   media: str
   title: str
@@ -79,7 +79,7 @@ class ScrapeMetadata():
     self.__get_year_season()
     self.__get_overview()
     self.__meta = Metadata(
-      self.__year,
+      int(self.__year),
       self.__season,
       self.__media,
       self.__title,
