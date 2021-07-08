@@ -94,11 +94,9 @@ from lib.anikore.scrape import(
 
 def main():
   url = 'https://www.anikore.jp/'
-  # mx = SearchMaxAnimeId()()
-  # print(mx)
+
   # ids = ScrapeAnimeIds()()
   # print(len(ids))
-  # print(len(set(ids)))
 
   id_ = 10523
   scrape = ScrapeAnime()
@@ -112,7 +110,6 @@ def main():
 
   # s = time.time()
  
-  # # ScrapeAnime()()
   # conn = pymysql.connect(
   #   host='db',
   #   port=3306,
@@ -132,9 +129,14 @@ def main():
     
 
   # print(time.time() - s)
-  # pprint(elm)
-  # for x in elm:
-  #   print(x.text)
+
+
+
+def lambda_handler(
+  event,
+  context,
+):
+  main()
 
 
 if __name__ == '__main__':
