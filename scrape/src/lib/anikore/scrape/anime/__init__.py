@@ -5,6 +5,9 @@ from dataclasses import (
   astuple,
 )
 import typing
+from typing import (
+  Optional,
+)
 from .metadata import (
   ScrapeMetadata,
   Metadata,
@@ -73,12 +76,12 @@ class ScrapeAnime():
     self,
   ) -> typing.NoReturn:
     fns = (
-      ScrapeMetadata(),
       ScrapeSummary(),
       ScrapePoint(),
+      ScrapeMetadata(),
     )
-    id_ = self.__id
     soup = self.__soup
+    id_ = self.__id
     self.__anime = Anime(
       id_,
       *(f(soup) for f in fns),
