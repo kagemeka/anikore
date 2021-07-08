@@ -11,15 +11,13 @@ from lib.anikore.scrape import(
   Anime,
 )
 
-# import sqlalchemy
-# import pymysql
-
 
 
 @dataclasses.dataclass
 class AdamDF():
   meta: pd.DataFrame
   tag: pd.DataFrame
+
 
 
 class MakeDF():
@@ -99,14 +97,10 @@ class MakeDFs():
     fn = MakeDF()
     meta = []
     tag = []
-    i = 0
     for anime in self.__animes:
       df = fn(anime)
       meta.append(df.meta)
       tag.append(df.tag)
-      i += 1
-      if i == 30:
-        break 
       print(anime)
     self.__df = AdamDF(
       pd.concat(meta),

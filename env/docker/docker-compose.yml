@@ -65,7 +65,7 @@ services:
         target: /root/scrape/
         volume:
           nocopy: true
-          - type: bind
+      - type: bind
         source: ~/.aws
         target: /root/.aws
         read_only: true
