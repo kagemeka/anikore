@@ -81,6 +81,9 @@ from pprint import (
 from lib.anikore.scrape.anime.header.point import (
   ScrapePoint,
 )
+from lib.anikore.scrape.anime.header.metadata import (
+  ScrapeMetadata,
+)
   
 
 
@@ -107,6 +110,9 @@ def main():
     res.content,
     'html.parser',
   )
+  p = scrape(soup)
+  print(p)
+  scrape = ScrapeMetadata()
   p = scrape(soup)
   print(p)
   # url = 'https://www.anikore.jp/50on/'
