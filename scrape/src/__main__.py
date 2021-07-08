@@ -1,33 +1,14 @@
-import typing
-import dataclasses
-from dataclasses import (
-  fields,
-  asdict,
-)
-import pandas as pd
-from lib.anikore.scrape import(
-  ScrapeAnimes,
-  ScrapeAnimeIds,
-  Anime,
-)
-
-# import sqlalchemy
-# import pymysql
-
 from lib.adam import (
-  MakeDFs,
-  Store,
+  Adam,
 )
 
 
 def main():
   ids = [10523]
-  make = MakeDFs()
-  df = make()
-  print(df)
-  store = Store()
-  store(df)
+  Adam()()
 
+  # import sqlalchemy
+  # import pymysql
 
   # s = time.time()
  
@@ -44,13 +25,9 @@ def main():
   # print(cur.fetchall())
   # cur.execute('CREATE DATABASE test_db')
   # cur.execute('SHOW DATABASES')
-
+  
   # print(cur.fetchall())
-
-    
-
   # print(time.time() - s)
-
 
 
 def lambda_handler(
