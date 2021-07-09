@@ -66,16 +66,17 @@ class ScrapeTags():
     self,
     tag: bs4.element.Tag,
   ) -> Tag:
-    s = tag.find(
-      'a',
-    ).text.split()[1]
+    elm = tag.find('a')
+    url = elm.get('href')
+    name = url.split('/')[-2]
+    s = elm.text.split()[-1]
     ptn = re.compile(
-      r'(.+)\((-?\d+)\)',
+      r'.*\((-?\d+)\)',
     )
     m = re.match(ptn, s)
     return Tag(
-      name=m.group(1),
-      cnt=int(m.group(2)),
+      name=name,
+      cnt=int(m.group(1)),
     )
 
   
