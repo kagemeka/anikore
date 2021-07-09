@@ -120,6 +120,7 @@ class MakeDFs():
     ids = ScrapeAnimeIds()()
     ids = set(ids)
     ids -= self.__scraped_ids
+    ids = list(ids)
     scrape = ScrapeAnimes()
     self.__animes = scrape(ids)
   

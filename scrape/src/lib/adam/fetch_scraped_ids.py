@@ -47,6 +47,7 @@ class FetchScrapedIds():
     )
     ids = set()
     for obj in ls:
+      obj = obj.key
       file = obj.split('/')[-1]
       if file != 'meta.csv':
         continue
