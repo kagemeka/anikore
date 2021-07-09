@@ -4,7 +4,6 @@ from lib.adam import (
 
 
 def main():
-  ids = [10523]
   Adam()()
 
   # import sqlalchemy
@@ -25,7 +24,7 @@ def main():
   # print(cur.fetchall())
   # cur.execute('CREATE DATABASE test_db')
   # cur.execute('SHOW DATABASES')
-  
+
   # print(cur.fetchall())
   # print(time.time() - s)
 
