@@ -10,6 +10,9 @@ from lib.anikore.scrape import(
   ScrapeAnimeIds,
   Anime,
 )
+from .fetch_scraped_ids import(
+  FetchScrapedIds,
+)
 
 
 
@@ -85,7 +88,8 @@ class MakeDF():
 class MakeDFs():
   def __call__(
     self,
-  ) -> AdamDF:
+  ) -> typing.Optional[AdamDF]:
+    self.__fetch_scraped_ids()
     self.__scrape()
     self.__make()
     return self.__df
@@ -102,6 +106,8 @@ class MakeDFs():
       meta.append(df.meta)
       tag.append(df.tag)
       print(anime)
+    if not meta:
+      self.__df = None; return
     self.__df = AdamDF(
       pd.concat(meta),
       pd.concat(tag),
@@ -112,5 +118,16 @@ class MakeDFs():
     self,
   ) -> typing.NoReturn:
     ids = ScrapeAnimeIds()()
+    ids = set(ids)
+    ids -= self.__scraped_ids
     scrape = ScrapeAnimes()
     self.__animes = scrape(ids)
+  
+
+  def __fetch_scraped_ids(
+    self,
+  ) -> typing.NoReturn:
+    fn = FetchScrapedIds()
+    ids = fn()
+    self.__scraped_ids = ids
+

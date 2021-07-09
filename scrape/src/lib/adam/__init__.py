@@ -13,4 +13,5 @@ class Adam():
     self,
   ) -> typing.NoReturn:
     df = MakeDFs()()
+    if df is None: return
     Store()(df)
