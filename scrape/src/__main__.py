@@ -2,8 +2,10 @@ from lib.adam import (
   Adam,
 )
 
-
 def main():
+  ...
+
+
   Adam()()
 
   # import sqlalchemy

@@ -5,7 +5,14 @@ from dataclasses import (
   asdict,
 )
 import pandas as pd
-from lib.anikore.scrape import(
+# from lib.anikore.scrape import(
+#   ScrapeAnimes,
+#   ScrapeAnimeIds,
+#   Anime,
+# )
+from \
+  kagemeka.anikore.scrape \
+import (
   ScrapeAnimes,
   ScrapeAnimeIds,
   Anime,
