@@ -1,141 +1,67 @@
 import typing
 import dataclasses
-from dataclasses import (
-  fields,
-  asdict,
-)
 import pandas as pd
-# from lib.anikore.scrape import(
-#   ScrapeAnimes,
-#   ScrapeAnimeIds,
-#   Anime,
-# )
-from \
-  kagemeka.anikore.scrape \
-import (
-  ScrapeAnimes,
-  ScrapeAnimeIds,
-  Anime,
-)
-from .fetch_scraped_ids import(
-  FetchScrapedIds,
-)
-
+from lib.anikore.scrape import Anime
 
 
 @dataclasses.dataclass
-class AdamDF():
+class AdamDataFrame():
   meta: pd.DataFrame
   tag: pd.DataFrame
 
 
 
-class MakeDF():
-  def __call__(
-    self,
-    anime: Anime,
-  ) -> AdamDF:
-    self.__anime = anime
-    self.__make()
-    return self.__df
-  
+class MakeDataFrame():  
+  def __make(self) -> typing.NoReturn:
+    self.__make_meta()
+    self.__make_tag()
+    self.__df = AdamDataFrame(self.__meta, self.__tag)
 
-  def __make_meta(
-    self,
-  ) -> typing.NoReturn:
+
+  def __make_meta(self) -> typing.NoReturn:
     anime = self.__anime
-    id_ = anime.anime_id
     point = anime.point
     point = {
-      f'{f.name}_point': (
-        getattr(point, f.name)
-      )
-      for f in fields(point)
+      f'{f.name}_point': getattr(point, f.name)
+      for f in dataclasses.fields(point)
     }
     data = {
-      'anime_id': id_,
-      **asdict(anime.metadata),
-      **asdict(anime.summary),
+      'anime_id': anime.anime_id,
+      **dataclasses.asdict(anime.metadata),
+      **dataclasses.asdict(anime.summary),
       **point,
     }
     self.__meta = pd.DataFrame(
-     [[*data.values()]],
-     columns=[*data.keys()],
+      [[*data.values()]],
+      columns=[*data.keys()],
     )
 
 
-  def __make_tag(
-    self,
-  ) -> typing.NoReturn:
+  def __make_tag(self) -> typing.NoReturn:
     anime = self.__anime
     df = pd.DataFrame(
       anime.tags,
-      columns=[
-        'name',
-        'count',
-      ],
+      columns=['name', 'count'],
     )
-    id_ = anime.anime_id
-    df['anime_id'] = id_
+    df['anime_id'] = anime.anime_id
     self.__tag = df
 
 
-  def __make(
-    self,
-  ) -> typing.NoReturn:
-    self.__make_meta()
-    self.__make_tag()
-    self.__df = AdamDF(
-      self.__meta,
-      self.__tag,
-    )
-
-
-
-class MakeDFs():
-  def __call__(
-    self,
-  ) -> typing.Optional[AdamDF]:
-    self.__fetch_scraped_ids()
-    self.__scrape()
+  def from_anime(self, anime: Anime) -> AdamDataFrame:
+    self.__anime = anime
     self.__make()
     return self.__df
-  
 
-  def __make(
-    self,
-  ) -> typing.NoReturn:
-    fn = MakeDF()
-    meta = []
-    tag = []
-    for anime in self.__animes:
-      df = fn(anime)
+
+  def from_animes(
+    self, 
+    animes: typing.Iterable[Anime],
+  ) -> typing.Optional[AdamDataFrame]:
+    meta, tag = [], []
+    for anime in animes:
+      print(anime)
+      df = self.from_anime(anime)
       meta.append(df.meta)
       tag.append(df.tag)
-      print(anime)
-    if not meta:
-      self.__df = None; return
-    self.__df = AdamDF(
-      pd.concat(meta),
-      pd.concat(tag),
-    )
-  
-
-  def __scrape(
-    self,
-  ) -> typing.NoReturn:
-    ids = ScrapeAnimeIds()()
-    ids = set(ids)
-    ids -= self.__scraped_ids
-    ids = list(ids)
-    scrape = ScrapeAnimes()
-    self.__animes = scrape(ids)
-  
-
-  def __fetch_scraped_ids(
-    self,
-  ) -> typing.NoReturn:
-    fn = FetchScrapedIds()
-    ids = fn()
-    self.__scraped_ids = ids
-
+    if not meta: return None
+    return AdamDataFrame(pd.concat(meta), pd.concat(tag))
