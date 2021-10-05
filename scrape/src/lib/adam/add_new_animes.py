@@ -1,47 +1,22 @@
 import typing 
-from .make_df import AdamDataFrame
-from .fetch_scraped_ids import (
-  FetchScrapedIds,
-  Config as FetchScrapedIdsConfig,
-)
-
-
-class AddNewAnimes():
-  def __call__(self) -> typing.NoReturn:
-    anime_ids = ScrapeAnimeIds()
-    cfg = FetchScrapedIdsConfig(
-      'av-adam-store', 
-      'anikore/meta.csv',
-    )
-    ids = FetchScrapedIds(cfg)()
-    
-
-
-  def __fetch_scraped_ids(self) -> typing.NoReturn:
-    ids = fn()
-    self.__scraped_ids = ids
+import pandas as pd
+from lib.aws_util.s3.csv.read import read_csv_on_s3
+from lib.anikore.scrape import scrape_anime_ids, scrape_animes
+from .make_df import MakeDataFrame
+from .store_to_s3 import store
 
 
 
-class MakeDFs():
-  def __call__(self) -> typing.Optional[AdamDataFrame]:
-    self.__fetch_scraped_ids()
-    self.__scrape_animes()
-    self.__make_df()
-    return self.__df
-
-  
-
-  def __scrape_animes(self) -> typing.NoReturn:
-    ids = ScrapeAnimeIds()()
-    # ids = list(set(ids) - self.__scraped_ids)
-    self.__animes = ScrapeAnimes()(ids)
-  
-
-  def __fetch_scraped_ids(self) -> typing.NoReturn:
-    fn = FetchScrapedIds()
-    ids = fn()
-    self.__scraped_ids = ids
+def fetch_scraped_ids() -> typing.List[int]:
+  df = read_csv_on_s3('av-adam-store', 'anikore/meta.csv')
+  return list(df.anime_id.values)
 
 
- 
+def add_new_animes() -> typing.NoReturn:
+  anime_ids = scrape_anime_ids()
+  anime_ids = list(set(anime_ids) - set(fetch_scraped_ids()))
+  animes = scrape_animes(anime_ids)
+  df = MakeDataFrame().from_animes(animes)
+  print(df)
+  # if df is None: return
+  store(df)

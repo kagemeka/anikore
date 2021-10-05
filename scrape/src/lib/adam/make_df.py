@@ -1,16 +1,7 @@
 import typing
 import dataclasses
 import pandas as pd
-from lib.anikore.scrape import (
-  # ScrapeAnimes,
-  # ScrapeAnimeIds,
-  Anime,
-  scrape_animes,
-  scrape_anime_ids,
-)
-from lib.anikore.scrape.anime.tag import Tag
-from .fetch_scraped_ids import FetchScrapedIds
-
+from lib.anikore.scrape import Anime
 
 
 @dataclasses.dataclass

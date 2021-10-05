@@ -9,5 +9,3 @@ def download_from_s3(
 ) -> typing.NoReturn:
   bucket = connect_to_bucket(bucket_name)
   bucket.Object(obj).download_file(save_path)
-  print(type(bucket))
-
