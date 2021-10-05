@@ -1,7 +1,6 @@
-from .max_anime_id import SearchMaxAnimeId
-from .anime_ids import ScrapeAnimeIds
+from .anime_ids import scrape_anime_ids
 from .anime import (
-  ScrapeAnime,
   Anime,
+  scrape_anime,
 )
-from .animes import ScrapeAnimes
+from .animes import scrape_animes

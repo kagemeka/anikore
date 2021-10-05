@@ -12,13 +12,9 @@ def set_globals() -> typing.NoReturn:
 set_globals()
 sys.path.append(f'{root}/src/')
 
-
-
-def scrape_unscraped_anime() -> typing.NoReturn:
-  ... 
+from lib.adam import add_new_animes
 
 
 
 if __name__ == '__main__':
-  ... 
-
+  add_new_animes()
