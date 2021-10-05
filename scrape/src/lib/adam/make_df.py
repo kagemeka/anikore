@@ -2,32 +2,29 @@ import typing
 import dataclasses
 import pandas as pd
 from lib.anikore.scrape import (
-  ScrapeAnimes,
-  ScrapeAnimeIds,
+  # ScrapeAnimes,
+  # ScrapeAnimeIds,
   Anime,
+  scrape_animes,
+  scrape_anime_ids,
 )
+from lib.anikore.scrape.anime.tag import Tag
 from .fetch_scraped_ids import FetchScrapedIds
 
 
 
 @dataclasses.dataclass
-class AdamDF():
+class AdamDataFrame():
   meta: pd.DataFrame
   tag: pd.DataFrame
 
 
 
-class MakeDF():
-  def __call__(self, anime: Anime) -> AdamDF:
-    self.__anime = anime
-    self.__make()
-    return self.__df
-  
-
+class MakeDataFrame():  
   def __make(self) -> typing.NoReturn:
     self.__make_meta()
     self.__make_tag()
-    self.__df = AdamDF(self.__meta, self.__tag)
+    self.__df = AdamDataFrame(self.__meta, self.__tag)
 
 
   def __make_meta(self) -> typing.NoReturn:
@@ -49,9 +46,7 @@ class MakeDF():
     )
 
 
-  def __make_tag(
-    self,
-  ) -> typing.NoReturn:
+  def __make_tag(self) -> typing.NoReturn:
     anime = self.__anime
     df = pd.DataFrame(
       anime.tags,
@@ -61,40 +56,21 @@ class MakeDF():
     self.__tag = df
 
 
-
-class MakeDFs():
-  def __call__(self) -> typing.Optional[AdamDF]:
-    self.__fetch_scraped_ids()
-    self.__scrape_animes()
-    self.__make_df()
+  def from_anime(self, anime: Anime) -> AdamDataFrame:
+    self.__anime = anime
+    self.__make()
     return self.__df
-  
 
-  def __make_df(self) -> typing.NoReturn:
-    fn = MakeDF()
-    meta = []
-    tag = []
-    for anime in self.__animes:
+
+  def from_animes(
+    self, 
+    animes: typing.Iterable[Anime],
+  ) -> typing.Optional[AdamDataFrame]:
+    meta, tag = [], []
+    for anime in animes:
       print(anime)
-      df = fn(anime)
+      df = self.from_anime(anime)
       meta.append(df.meta)
       tag.append(df.tag)
-      print(anime)
-    if not meta:
-      self.__df = None; return
-    self.__df = AdamDF(
-      pd.concat(meta),
-      pd.concat(tag),
-    )
-  
-
-  def __scrape_animes(self) -> typing.NoReturn:
-    ids = ScrapeAnimeIds()()
-    ids = list(set(ids) - self.__scraped_ids)
-    self.__animes = ScrapeAnimes()(ids)
-  
-
-  def __fetch_scraped_ids(self) -> typing.NoReturn:
-    fn = FetchScrapedIds()
-    ids = fn()
-    self.__scraped_ids = ids
+    if not meta: return None
+    return AdamDataFrame(pd.concat(meta), pd.concat(tag))

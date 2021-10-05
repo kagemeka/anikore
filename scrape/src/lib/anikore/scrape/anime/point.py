@@ -15,37 +15,19 @@ class Point():
 
 
 
-class ScrapePoint():
-  def __call__(self, soup: bs4.BeautifulSoup) -> Point:
-    self.__soup = soup
-    self.__scrape()
-    return self.__point
-  
-
-  def __init__(self) -> typing.NoReturn:
-    self.__section = 'l-animeDetailHeader_pointAndButtonBlock'
-
-  
-  def __get_total(self) -> typing.NoReturn:
-    section = self.__section
-    tot = self.__soup.find(
-      class_=f'{section}_starBlock',
-    ).find('strong').text
-    self.__total = float(tot)
+def _scrape_point(soup: bs4.BeautifulSoup) -> Point:
+  section = 'l-animeDetailHeader_pointAndButtonBlock'
+ 
+  def get_total() -> float:
+    tot = soup.find(class_=f'{section}_starBlock').find(
+      'strong',
+    ).text
+    return float(tot)
     
-
-  def __get_details(self) -> typing.NoReturn:
-    section = self.__section
-    ls = self.__soup.find(
-      class_=f'{section}_pointBlock',
-    ).find_all('dd')
-    self.__details = (float(elm.text.strip()) for elm in ls)
-
-
-  def __scrape(self) -> typing.NoReturn:
-    self.__get_total()
-    self.__get_details()
-    self.__point = Point(
-      self.__total,
-      *self.__details,
+  def get_details() -> typing.Iterator[float]:
+    ls = soup.find(class_=f'{section}_pointBlock').find_all(
+      'dd',
     )
+    return (float(elm.text.strip()) for elm in ls)
+
+  return Point(get_total(), *get_details())

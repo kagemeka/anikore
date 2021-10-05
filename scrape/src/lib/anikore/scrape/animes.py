@@ -1,14 +1,12 @@
 import typing
 import tqdm
-from . import(
-  ScrapeAnime,
+from .anime import (
   Anime,
+  scrape_anime,
 )
   
 
-class ScrapeAnimes():
-  def __call__(
-    self,
-    ids: typing.List[int],
-  ) -> typing.Iterator[Anime]:
-    for i in tqdm.tqdm(ids): yield ScrapeAnime()(i)
+def scrape_animes(
+  anime_ids: typing.List[int],
+) -> typing.Iterator[Anime]:
+  for i in tqdm.tqdm(anime_ids): yield scrape_anime(i)

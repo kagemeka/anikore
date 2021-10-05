@@ -2,22 +2,10 @@ import requests
 import bs4
 import dataclasses
 import typing
-from .metadata import (
-  ScrapeMetadata,
-  Metadata,
-)
-from .summary import (
-  ScrapeSummary,
-  Summary,
-)
-from .point import (
-  ScrapePoint,
-  Point,
-)
-from .tag import (
-  Tag,
-  ScrapeTags,
-)
+from .metadata import Metadata, _scrape_metadata
+from .summary import Summary, _scrape_summary
+from .point import Point, _scrape_point
+from .tag import Tag, _scrape_tags
 
 
 
@@ -30,35 +18,14 @@ class Anime():
   tags: typing.List[Tag]
 
 
-
-class ScrapeAnime():
-  def __call__(self, anime_id: int) -> Anime:
-    self.__id = anime_id
-    self.__make_soup()
-    self.__scrape()
-    return self.__anime
-  
-
-  def __init__(self) -> typing.NoReturn:
-    self.__base_url = 'https://www.anikore.jp/anime/'
-
-
-  def __make_soup(self) -> typing.NoReturn:
-    i = self.__id
-    response = requests.get(f'{self.__base_url}{i}/')
-    soup = bs4.BeautifulSoup(response.content, 'html.parser')
-    self.__soup = soup 
-
-  
-  def __scrape(self) -> typing.NoReturn:
-    funcs = (
-      ScrapeMetadata(),
-      ScrapeSummary(),
-      ScrapePoint(),
-    )
-    soup = self.__soup
-    self.__anime = Anime(
-      self.__id,
-      *(f(soup) for f in funcs),
-      ScrapeTags()(self.__id),
-    )
+def scrape_anime(anime_id: int) -> Anime:
+  base_url = 'https://www.anikore.jp/anime/'
+  response = requests.get(f'{base_url}{anime_id}/')
+  soup = bs4.BeautifulSoup(response.content, 'html.parser')
+  return Anime(
+    anime_id,
+    _scrape_metadata(soup),
+    _scrape_summary(soup),
+    _scrape_point(soup),
+    _scrape_tags(anime_id),
+  )

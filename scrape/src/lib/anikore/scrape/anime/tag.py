@@ -9,48 +9,28 @@ import re
 @dataclasses.dataclass
 class Tag():
   name: str
-  cnt: int
+  count: int
 
 
 
-class ScrapeTags():
-  def __call__(self, anime_id: int) -> typing.List[Tag]:
-    self.__id = anime_id
-    self.__make_soup()
-    self.__scrape()
-    return self.__tags
-
-
-  def __init__(self) -> typing.NoReturn:
-    self.__base_url = 'https://www.anikore.jp/anime_tag/'
-
-
-  def __make_soup(self) -> typing.NoReturn:
-    i = self.__id
-    response = requests.get(f'{self.__base_url}{i}/')
-    soup = bs4.BeautifulSoup(response.content, 'html.parser')
-    self.__soup = soup 
-
-
-  def __get_tags(self) -> typing.NoReturn:
-    soup = self.__soup
-    self.__tags = soup.find(
-      id='tagTable',
-    ).find(
+def _scrape_tags(anime_id: int) -> typing.List[Tag]:
+  base_url = 'https://www.anikore.jp/anime_tag/'
+  response = requests.get(f'{base_url}{anime_id}/')
+  soup = bs4.BeautifulSoup(response.content, 'html.parser')
+  
+  def get_tags() -> typing.List[bs4.element.Tag]:
+    tags = soup.find(id='tagTable').find(
       class_='m-animeDetailTagBlock_tagList',
     ).find_all('li')
-    
+    return tags
 
-  def __extract(self, tag: bs4.element.Tag) -> Tag:
+  def extract(tag: bs4.element.Tag) -> Tag:
     elm = tag.find('a')
     url = elm.get('href')
     name = url.split('/')[-2]
     s = elm.text.split()[-1]
     ptn = re.compile(r'.*\((-?\d+)\)')
     m = re.match(ptn, s)
-    return Tag(name=name, cnt=int(m.group(1)))
-
+    return Tag(name=name, count=int(m.group(1)))
   
-  def __scrape(self) -> typing.NoReturn:
-    self.__get_tags()
-    self.__tags = [self.__extract(tag) for tag in self.__tags]
+  return [extract(tag) for tag in get_tags()]
