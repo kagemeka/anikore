@@ -46,7 +46,7 @@ def store(df: AdamDataFrame) -> typing.NoReturn:
       inplace=True,
     )
     print(tag)
-    tag.to_csv(meta_path, index=False)
+    tag.to_csv(tag_path, index=False)
 
   def upload() -> typing.NoReturn:
     upload_to_s3(bucket, meta_obj, meta_path)
