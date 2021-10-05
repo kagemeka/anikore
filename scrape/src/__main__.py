@@ -40,5 +40,11 @@ def lambda_update_animes(event, context) -> typing.NoReturn:
   update_animes()
 
 
+def lambda_handler(event, context) -> typing.NoReturn:
+  add_new_animes()
+  update_animes()
+
+
+
 if __name__ == '__main__':
   main()
