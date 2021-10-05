@@ -3,9 +3,6 @@ from lib.adam import (
 )
 
 def main():
-  ...
-
-
   Adam()()
 
   # import sqlalchemy
