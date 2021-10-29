@@ -1,11 +1,9 @@
 import typing 
-from lib.adam import (
-  add_new_animes,
-  update_animes,
-)
+import adam 
+
 
 def main() -> typing.NoReturn:
-  ...
+    ...
 
   # import sqlalchemy
   # import pymysql
@@ -33,18 +31,18 @@ def main() -> typing.NoReturn:
 
 
 def lambda_add_animes(event, context) -> typing.NoReturn:
-  add_new_animes()
+    adam.add_new_animes()
 
 
 def lambda_update_animes(event, context) -> typing.NoReturn:
-  update_animes()
+    adam.update_animes()
 
 
 def lambda_handler(event, context) -> typing.NoReturn:
-  add_new_animes()
-  update_animes()
+    adam.add_new_animes()
+    adam.update_animes()
 
 
 
 if __name__ == '__main__':
-  main()
+    main()

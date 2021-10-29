@@ -3,8 +3,7 @@ import boto3
 import datetime
 import pandas as pd
 from .make_df import AdamDataFrame
-from lib.aws_util.s3.upload import upload_to_s3
-from lib.aws_util.s3.download import download_from_s3
+import aws.s3
 
 
 
@@ -24,8 +23,8 @@ def store(df: AdamDataFrame) -> typing.NoReturn:
     df.tag['updated_at'] = dt
 
   def download() -> typing.NoReturn:
-    download_from_s3(bucket, meta_obj, meta_path)
-    download_from_s3(bucket, tag_obj, tag_path)
+    aws.s3.download(bucket, meta_obj, meta_path)
+    aws.s3.download(bucket, tag_obj, tag_path)
 
   def merge() -> typing.NoReturn:
     meta_old = pd.read_csv(meta_path)
@@ -49,8 +48,8 @@ def store(df: AdamDataFrame) -> typing.NoReturn:
     tag.to_csv(tag_path, index=False)
 
   def upload() -> typing.NoReturn:
-    upload_to_s3(bucket, meta_obj, meta_path)
-    upload_to_s3(bucket, tag_obj, tag_path)
+    aws.s3.upload(bucket, meta_obj, meta_path)
+    aws.s3.upload(bucket, tag_obj, tag_path)
 
   add_timestamp()
   download()
