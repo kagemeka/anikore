@@ -1,7 +1,7 @@
 import typing
 import dataclasses
 import pandas as pd
-from lib.anikore.scrape import Anime
+import anikore.scrape.anime
 
 
 @dataclasses.dataclass
@@ -47,7 +47,7 @@ class MakeDataFrame():
     self.__tag = df
 
 
-  def from_anime(self, anime: Anime) -> AdamDataFrame:
+  def from_anime(self, anime: anikore.scrape.anime.Anime) -> AdamDataFrame:
     self.__anime = anime
     self.__make()
     return self.__df
@@ -55,7 +55,7 @@ class MakeDataFrame():
 
   def from_animes(
     self, 
-    animes: typing.Iterable[Anime],
+    animes: typing.Iterable[anikore.scrape.anime.Anime],
   ) -> typing.Optional[AdamDataFrame]:
     meta, tag = [], []
     for anime in animes:
