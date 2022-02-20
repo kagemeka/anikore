@@ -1,0 +1,21 @@
+.. Anikore documentation master file, created by
+   sphinx-quickstart on Sun Feb 20 03:10:40 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Anikore's documentation!
+===================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   anikore
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
