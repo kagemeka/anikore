@@ -149,4 +149,6 @@ def scrape_anime(anime_id: int) -> Anime:
 
 
 def scrape_animes(anime_ids: typing.List[int]) -> typing.Iterator[Anime]:
-  for i in tqdm.tqdm(anime_ids): yield scrape_anime(i)
+  for i in tqdm.tqdm(anime_ids):
+      print(i) 
+      yield scrape_anime(i)
