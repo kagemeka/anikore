@@ -1,9 +1,10 @@
 import importlib.metadata
+import logging
 import typing
+
 import bs4
 import requests
 import tqdm
-import logging
 
 __version__ = importlib.metadata.version("anikore")
 
@@ -51,12 +52,13 @@ def search_max_anime_id() -> int:
     return binary_search()
 
 
-import requests
-import bs4
 import dataclasses
-import typing
 import re
+import typing
 import unicodedata
+
+import bs4
+import requests
 import tqdm
 
 
